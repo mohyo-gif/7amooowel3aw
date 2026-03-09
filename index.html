@@ -2,17 +2,118 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>حمو ولعة فوق</title>
+    <title>حمو ولعه - المطاريد</title>
     <style>
-        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e94560; text-align: center; }
-        #game-container { position: relative; width: 100vw; height: 80vh; background: #16213e; border-bottom: 8px solid #0f3460; overflow: hidden; }
-        .word { position: absolute; font-size: 28px; font-weight: bold; color: #fff; background: #27ae60; padding: 8px 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4); }
-        #input-container { margin-top: 25px; }
-        #word-input { font-size: 26px; padding: 12px; border-radius: 10px; border: 2px solid #27ae60; background: #1a1a2e; color: white; width: 350px; text-align: center; outline: none; }
-        #stats { display: flex; justify-content: space-around; font-size: 22px; padding: 15px; background: #0f3460; color: #00d2ff; }
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma; 
+            /* خلفية جبلية احترافية */
+            background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed; 
+            background-size: cover;
+            text-align: center; 
+            position: relative; /* مهم عشان الطبقات تظبط */
+        }
+        
+        /* طبقة الديزاين الشفاف بكلمة المطاريد */
+        body::before {
+            content: "المطاريد המטאריד المطاريد המטאריד המטאריד"; /* تكرار الكلمة للعرض */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg); /* تدوير مائل للشياكة */
+            font-size: 15vw; /* حجم ضخم بالنسبة لعرض الشاشة */
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.04); /* لون أبيض شفاف جداً */
+            white-space: nowrap;
+            z-index: -1; /* خلف كل عناصر اللعبة */
+            pointer-events: none; /* عشان ما تعطلش الضغط */
+            font-family: 'Cairo', sans-serif; /* خط عربي عريض */
+        }
+
+        /* إضافة تأثير تكرار النص بالطول أيضاً */
+        body::after {
+            content: "المطاريد\nالمطاريد\nالمطاريد\nالمطاريد"; 
+            position: absolute;
+            top: 0;
+            left: 5%;
+            font-size: 5vw;
+            color: rgba(233, 69, 96, 0.03); /* لون أحمر شفاف جداً */
+            white-space: pre; /* عشان يحترم السطور الجديدة */
+            z-index: -1;
+            pointer-events: none;
+            writing-mode: vertical-rl; /* كتابة رأسية */
+            transform: scaleY(-1); /* قلب النص رآسياً للحركة */
+        }
+
+        #game-container { 
+            position: relative; 
+            width: 100vw; 
+            height: 80vh; 
+            background: rgba(15, 52, 96, 0.5); /* زيادة الشفافية عشان ديزاين الخلفية يبان */
+            border-bottom: 8px solid #e94560; 
+            overflow: hidden;
+        }
+        .word { 
+            position: absolute; 
+            font-size: 28px; 
+            font-weight: bold; 
+            color: #fff; 
+            background: linear-gradient(45deg, #e94560, #fb8500); 
+            padding: 10px 25px; 
+            border-radius: 50px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: glow 1.5s infinite alternate;
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 10px #e94560; }
+            to { box-shadow: 0 0 25px #fb8500; }
+        }
+        #input-container { margin-top: 20px; }
+        #word-input { 
+            font-size: 26px; 
+            padding: 15px; 
+            border-radius: 30px; 
+            border: 3px solid #e94560; 
+            background: rgba(26, 26, 46, 0.9); 
+            color: white; 
+            width: 400px; 
+            text-align: center; 
+            outline: none;
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+        }
+        #stats { 
+            display: flex; 
+            justify-content: space-around; 
+            font-size: 24px; 
+            padding: 20px; 
+            background: rgba(15, 52, 96, 0.9); 
+            color: #e94560; 
+            font-weight: bold;
+        }
+        .mute-btn {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            z-index: 100;
+            padding: 10px 20px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@900&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
+    </audio>
+
+    <button class="mute-btn" onclick="toggleMute()">كتم/تشغيل الموسيقى 🔊</button>
 
     <div id="stats">
         <div>النقاط: <span id="score">0</span></div>
@@ -23,7 +124,7 @@
     <div id="game-container"></div>
 
     <div id="input-container">
-        <input type="text" id="word-input" placeholder="اكتب هنا بهدوء..." autofocus autocomplete="off">
+        <input type="text" id="word-input" placeholder="اكتب يا فحل" autofocus autocomplete="off">
     </div>
 
     <script>
@@ -32,14 +133,34 @@
         const scoreDisplay = document.getElementById('score');
         const levelDisplay = document.getElementById('level');
         const livesDisplay = document.getElementById('lives');
+        const bgMusic = document.getElementById('bg-music');
 
         let score = 0;
         let lives = 10;
-        let speed = 0.9; // سرعة بطيئة جداً للبداية
+        let speed = 0.9; 
         let wordsOnScreen = [];
         let gameActive = true;
-        
-        const myWords = ["محفظة", "سياج", "اختراق", "انذار", "فقل"];
+        let musicStarted = false;
+
+        const myWords = ["محفظة", "سياج", "اختراق", "انذار", "فقل", "نقود"];
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(freq, type, duration) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function toggleMute() {
+            bgMusic.muted = !bgMusic.muted;
+        }
 
         function createWord() {
             if (!gameActive) return;
@@ -47,11 +168,10 @@
             const wordDiv = document.createElement('div');
             wordDiv.className = 'word';
             wordDiv.innerText = wordText;
-            wordDiv.style.top = '-50px';
-            wordDiv.style.left = Math.random() * (window.innerWidth - 150) + 'px';
-            
+            wordDiv.style.top = '-60px';
+            wordDiv.style.left = Math.random() * (window.innerWidth - 200) + 'px';
             container.appendChild(wordDiv);
-            wordsOnScreen.push({ element: wordDiv, top: -50, text: wordText });
+            wordsOnScreen.push({ element: wordDiv, top: -60, text: wordText });
         }
 
         function gameLoop() {
@@ -66,6 +186,7 @@
                     wordsOnScreen.splice(i, 1);
                     lives--;
                     livesDisplay.innerText = lives;
+                    playTone(150, 'square', 0.3);
                     if (lives <= 0) { gameOver(); }
                 }
             }
@@ -74,30 +195,40 @@
 
         function gameOver() {
             gameActive = false;
-            alert("انتهت اللعبة! مجموع نقاطك: " + score);
+            bgMusic.pause();
+            alert("انتهى التحدي يا فحل! نقاطك: " + score);
             location.reload();
         }
 
         input.addEventListener('input', () => {
+            if (!musicStarted) {
+                bgMusic.play();
+                musicStarted = true;
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
             const typed = input.value.trim();
             const foundIndex = wordsOnScreen.findIndex(w => w.text === typed);
             if (foundIndex !== -1) {
+                playTone(600, 'sine', 0.2);
                 container.removeChild(wordsOnScreen[foundIndex].element);
                 wordsOnScreen.splice(foundIndex, 1);
                 input.value = '';
                 score += 10;
                 scoreDisplay.innerText = score;
 
-                // التدرج في الصعوبة
                 if (score >= 60) {
-                    speed = 2.0;
-                    levelDisplay.innerText = "متوسط";
-                    levelDisplay.style.color = "#f1c40f";
+                    speed = 1.8;
+                    levelDisplay.innerText = "متوسط 💪";
+                }
+                if (score >= 150) {
+                    speed = 3.5;
+                    levelDisplay.innerText = "صعب 🔥";
                 }
             }
         });
 
-        setInterval(createWord, 3000); // كلمة كل 3 ثواني
+        setInterval(createWord, 2500); 
         gameLoop();
     </script>
 </body>
