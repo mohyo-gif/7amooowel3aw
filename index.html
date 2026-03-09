@@ -8,96 +8,92 @@
             margin: 0; 
             overflow: hidden; 
             font-family: 'Segoe UI', Tahoma; 
-            /* خلفية جبلية احترافية */
             background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed; 
             background-size: cover;
             text-align: center; 
-            position: relative; /* مهم عشان الطبقات تظبط */
+            position: relative;
         }
         
-        /* طبقة الديزاين الشفاف بكلمة المطاريد */
+        /* ديزاين المطاريد الصافي بلون الدم وبدون أي لغات تانية */
         body::before {
-            content: "المطاريد המטאריד المطاريد המטאריד המטאריד"; /* تكرار الكلمة للعرض */
+            content: "المطاريد"; 
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-15deg); /* تدوير مائل للشياكة */
-            font-size: 15vw; /* حجم ضخم بالنسبة لعرض الشاشة */
+            transform: translate(-50%, -50%) rotate(-15deg);
+            font-size: 12vw;
             font-weight: 900;
-            color: rgba(255, 255, 255, 0.04); /* لون أبيض شفاف جداً */
-            white-space: nowrap;
-            z-index: -1; /* خلف كل عناصر اللعبة */
-            pointer-events: none; /* عشان ما تعطلش الضغط */
-            font-family: 'Cairo', sans-serif; /* خط عربي عريض */
-        }
-
-        /* إضافة تأثير تكرار النص بالطول أيضاً */
-        body::after {
-            content: "المطاريد\nالمطاريد\nالمطاريد\nالمطاريد"; 
-            position: absolute;
-            top: 0;
-            left: 5%;
-            font-size: 5vw;
-            color: rgba(233, 69, 96, 0.03); /* لون أحمر شفاف جداً */
-            white-space: pre; /* عشان يحترم السطور الجديدة */
+            color: rgba(220, 20, 60, 0.4); 
+            white-space: pre;
             z-index: -1;
             pointer-events: none;
-            writing-mode: vertical-rl; /* كتابة رأسية */
-            transform: scaleY(-1); /* قلب النص رآسياً للحركة */
+            font-family: 'Cairo', sans-serif;
+            animation: pulse-blood 3s infinite alternate;
+        }
+
+        @keyframes pulse-blood {
+            from { text-shadow: 0 0 10px rgba(220, 20, 60, 0.6); }
+            to { text-shadow: 0 0 30px rgba(220, 20, 60, 1); }
         }
 
         #game-container { 
             position: relative; 
             width: 100vw; 
             height: 80vh; 
-            background: rgba(15, 52, 96, 0.5); /* زيادة الشفافية عشان ديزاين الخلفية يبان */
-            border-bottom: 8px solid #e94560; 
+            background: rgba(15, 52, 96, 0.5); 
+            border-bottom: 8px solid #dc143c; 
             overflow: hidden;
         }
+        
+        /* الكلمات اللي بتسقط بقت أحمر نيون (بلون الدم) */
         .word { 
             position: absolute; 
             font-size: 28px; 
             font-weight: bold; 
             color: #fff; 
-            background: linear-gradient(45deg, #e94560, #fb8500); 
+            background: linear-gradient(45deg, #8b0000, #ff0000); 
             padding: 10px 25px; 
             border-radius: 50px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.8);
             animation: glow 1.5s infinite alternate;
         }
+
         @keyframes glow {
-            from { box-shadow: 0 0 10px #e94560; }
-            to { box-shadow: 0 0 25px #fb8500; }
+            from { box-shadow: 0 0 10px #8b0000; }
+            to { box-shadow: 0 0 25px #ff0000; }
         }
+
         #input-container { margin-top: 20px; }
         #word-input { 
             font-size: 26px; 
             padding: 15px; 
             border-radius: 30px; 
-            border: 3px solid #e94560; 
+            border: 3px solid #dc143c; 
             background: rgba(26, 26, 46, 0.9); 
             color: white; 
             width: 400px; 
             text-align: center; 
             outline: none;
-            box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+            box-shadow: 0 0 20px rgba(220, 20, 60, 0.5);
         }
+
         #stats { 
             display: flex; 
             justify-content: space-around; 
             font-size: 24px; 
             padding: 20px; 
             background: rgba(15, 52, 96, 0.9); 
-            color: #e94560; 
+            color: #dc143c; 
             font-weight: bold;
         }
+
         .mute-btn {
             position: fixed;
             top: 80px;
             left: 20px;
             z-index: 100;
             padding: 10px 20px;
-            background: #e94560;
+            background: #dc143c;
             color: white;
             border: none;
             border-radius: 20px;
@@ -142,7 +138,7 @@
         let gameActive = true;
         let musicStarted = false;
 
-        const myWords = ["محفظة", "سياج", "اختراق", "انذار", "فقل", "نقود"];
+        const myWords = ["محفظة", "سياج", "اختراق", "انذار", "فقل", "نقود", "المطاريد"];
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playTone(freq, type, duration) {
@@ -218,18 +214,3 @@
                 scoreDisplay.innerText = score;
 
                 if (score >= 60) {
-                    speed = 1.8;
-                    levelDisplay.innerText = "متوسط 💪";
-                }
-                if (score >= 150) {
-                    speed = 3.5;
-                    levelDisplay.innerText = "صعب 🔥";
-                }
-            }
-        });
-
-        setInterval(createWord, 2500); 
-        gameLoop();
-    </script>
-</body>
-</html>
