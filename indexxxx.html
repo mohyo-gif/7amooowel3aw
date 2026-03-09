@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>حمو ولعة فوق</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a2e; color: #e94560; text-align: center; }
+        #game-container { position: relative; width: 100vw; height: 80vh; background: #16213e; border-bottom: 8px solid #0f3460; overflow: hidden; }
+        .word { position: absolute; font-size: 28px; font-weight: bold; color: #fff; background: #27ae60; padding: 8px 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4); }
+        #input-container { margin-top: 25px; }
+        #word-input { font-size: 26px; padding: 12px; border-radius: 10px; border: 2px solid #27ae60; background: #1a1a2e; color: white; width: 350px; text-align: center; outline: none; }
+        #stats { display: flex; justify-content: space-around; font-size: 22px; padding: 15px; background: #0f3460; color: #00d2ff; }
+    </style>
+</head>
+<body>
+
+    <div id="stats">
+        <div>النقاط: <span id="score">0</span></div>
+        <div>المستوى: <span id="level">سهل جداً ✨</span></div>
+        <div>المحاولات: <span id="lives">10</span></div>
+    </div>
+
+    <div id="game-container"></div>
+
+    <div id="input-container">
+        <input type="text" id="word-input" placeholder="اكتب هنا بهدوء..." autofocus autocomplete="off">
+    </div>
+
+    <script>
+        const container = document.getElementById('game-container');
+        const input = document.getElementById('word-input');
+        const scoreDisplay = document.getElementById('score');
+        const levelDisplay = document.getElementById('level');
+        const livesDisplay = document.getElementById('lives');
+
+        let score = 0;
+        let lives = 10;
+        let speed = 0.9; // سرعة بطيئة جداً للبداية
+        let wordsOnScreen = [];
+        let gameActive = true;
+        
+        const myWords = ["محفظة", "سياج", "اختراق", "انذار", "نقود", "فقل"];
+
+        function createWord() {
+            if (!gameActive) return;
+            const wordText = myWords[Math.floor(Math.random() * myWords.length)];
+            const wordDiv = document.createElement('div');
+            wordDiv.className = 'word';
+            wordDiv.innerText = wordText;
+            wordDiv.style.top = '-50px';
+            wordDiv.style.left = Math.random() * (window.innerWidth - 150) + 'px';
+            
+            container.appendChild(wordDiv);
+            wordsOnScreen.push({ element: wordDiv, top: -50, text: wordText });
+        }
+
+        function gameLoop() {
+            if (!gameActive) return;
+            for (let i = wordsOnScreen.length - 1; i >= 0; i--) {
+                let wordObj = wordsOnScreen[i];
+                wordObj.top += speed;
+                wordObj.element.style.top = wordObj.top + 'px';
+
+                if (wordObj.top > container.offsetHeight) {
+                    container.removeChild(wordObj.element);
+                    wordsOnScreen.splice(i, 1);
+                    lives--;
+                    livesDisplay.innerText = lives;
+                    if (lives <= 0) { gameOver(); }
+                }
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        function gameOver() {
+            gameActive = false;
+            alert("انتهت اللعبة! مجموع نقاطك: " + score);
+            location.reload();
+        }
+
+        input.addEventListener('input', () => {
+            const typed = input.value.trim();
+            const foundIndex = wordsOnScreen.findIndex(w => w.text === typed);
+            if (foundIndex !== -1) {
+                container.removeChild(wordsOnScreen[foundIndex].element);
+                wordsOnScreen.splice(foundIndex, 1);
+                input.value = '';
+                score += 10;
+                scoreDisplay.innerText = score;
+
+                // التدرج في الصعوبة
+                if (score >= 60) {
+                    speed = 2.0;
+                    levelDisplay.innerText = "متوسط";
+                    levelDisplay.style.color = "#f1c40f";
+                }
+            }
+        });
+
+        setInterval(createWord, 3000); // كلمة كل 3 ثواني
+        gameLoop();
+    </script>
+</body>
+</html>
