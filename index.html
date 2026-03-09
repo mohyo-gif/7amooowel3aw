@@ -14,16 +14,16 @@
             position: relative;
         }
         
-        /* كلمة المطاريد: تظهر مرة واحدة فقط ضخمة وفي المنتصف خلف منطقة اللعب */
+        /* كلمة المطاريد: تظهر مرة واحدة فقط ضخمة وفي المنتصف */
         body::before {
             content: "المطاريد"; 
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-10deg);
-            font-size: 18vw; 
+            font-size: 18vw; /* حجم ضخم جداً لمرة واحدة */
             font-weight: 900;
-            color: rgba(220, 20, 60, 0.4); 
+            color: rgba(220, 20, 60, 0.4); /* لون دم شفاف */
             white-space: nowrap;
             z-index: -1;
             pointer-events: none;
@@ -137,8 +137,7 @@
         let gameActive = true;
         let musicStarted = false;
 
-        // تم حذف كلمة "المطاريد" من هنا كما طلبت
-        const myWords = ["محفظة", "سياج", "اختراق", "انذار", "فقل", "نقود"];
+        const myWords = ["محفظة", "سياج", "اختراق", "انذار", "فقل", "نقود", "المطاريد"];
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playTone(freq, type, duration) {
