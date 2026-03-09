@@ -14,17 +14,17 @@
             position: relative;
         }
         
-        /* ديزاين المطاريد الصافي بلون الدم وبدون أي لغات تانية */
+        /* كلمة المطاريد: تظهر مرة واحدة فقط ضخمة وفي المنتصف خلف منطقة اللعب */
         body::before {
             content: "المطاريد"; 
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-15deg);
-            font-size: 12vw;
+            transform: translate(-50%, -50%) rotate(-10deg);
+            font-size: 18vw; 
             font-weight: 900;
             color: rgba(220, 20, 60, 0.4); 
-            white-space: pre;
+            white-space: nowrap;
             z-index: -1;
             pointer-events: none;
             font-family: 'Cairo', sans-serif;
@@ -32,20 +32,19 @@
         }
 
         @keyframes pulse-blood {
-            from { text-shadow: 0 0 10px rgba(220, 20, 60, 0.6); }
-            to { text-shadow: 0 0 30px rgba(220, 20, 60, 1); }
+            from { text-shadow: 0 0 15px rgba(220, 20, 60, 0.5); transform: translate(-50%, -50%) rotate(-10deg) scale(1); }
+            to { text-shadow: 0 0 40px rgba(220, 20, 60, 1); transform: translate(-50%, -50%) rotate(-10deg) scale(1.05); }
         }
 
         #game-container { 
             position: relative; 
             width: 100vw; 
             height: 80vh; 
-            background: rgba(15, 52, 96, 0.5); 
+            background: rgba(15, 52, 96, 0.4); 
             border-bottom: 8px solid #dc143c; 
             overflow: hidden;
         }
         
-        /* الكلمات اللي بتسقط بقت أحمر نيون (بلون الدم) */
         .word { 
             position: absolute; 
             font-size: 28px; 
@@ -138,7 +137,8 @@
         let gameActive = true;
         let musicStarted = false;
 
-        const myWords = ["محفظة", "سياج", "اختراق", "انذار", "فقل", "نقود", "المطاريد"];
+        // تم حذف كلمة "المطاريد" من هنا كما طلبت
+        const myWords = ["محفظة", "سياج", "اختراق", "انذار", "فقل", "نقود"];
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playTone(freq, type, duration) {
@@ -214,3 +214,18 @@
                 scoreDisplay.innerText = score;
 
                 if (score >= 60) {
+                    speed = 1.8;
+                    levelDisplay.innerText = "متوسط 💪";
+                }
+                if (score >= 150) {
+                    speed = 3.5;
+                    levelDisplay.innerText = "صعب 🔥";
+                }
+            }
+        });
+
+        setInterval(createWord, 2500); 
+        gameLoop();
+    </script>
+</body>
+</html>
